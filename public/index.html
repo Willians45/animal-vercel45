@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Animales</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🐾 Dashboard Animales</h1>
+            <button id="btnNuevoAnimal" class="btn-primary">+ Nuevo Animal</button>
+        </header>
+
+        <!-- Modal para crear/editar animales -->
+        <div id="modalAnimal" class="modal">
+            <div class="modal-content">
+                <h2 id="modalTitulo">Nuevo Animal</h2>
+                <form id="formAnimal">
+                    <input type="hidden" id="animalId">
+                    
+                    <div class="form-group">
+                        <label>Nombre:</label>
+                        <input type="text" id="nombre" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Género:</label>
+                        <select id="genero" required>
+                            <option value="">Seleccionar</option>
+                            <option value="Macho">Macho</option>
+                            <option value="Hembra">Hembra</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Peso (kg):</label>
+                            <input type="number" id="peso" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Edad (años):</label>
+                            <input type="number" id="edad" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="gestionesContainer" style="display: none;">
+                        <label>Número de Gestaciones:</label>
+                        <input type="number" id="gestaciones" value="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label>URL de la Foto:</label>
+                        <input type="url" id="foto_url" placeholder="https://ejemplo.com/foto.jpg">
+                    </div>
+
+                    <div class="form-group">
+                        <label>URL del PDF Pedigree:</label>
+                        <input type="url" id="pdf_url" placeholder="https://ejemplo.com/pedigree.pdf">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" id="btnCancelar" class="btn-secondary">Cancelar</button>
+                        <button type="submit" class="btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Lista de animales -->
+        <div id="listaAnimales" class="animales-grid">
+            <!-- Los animales se cargarán aquí dinámicamente -->
+        </div>
+    </div>
+
+    <!-- QR Modal -->
+    <div id="modalQR" class="modal">
+        <div class="modal-content">
+            <h2>QR del Perfil</h2>
+            <div id="qrcode"></div>
+            <div style="margin-top: 20px;">
+                <button id="btnCerrarQR" class="btn-secondary">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
