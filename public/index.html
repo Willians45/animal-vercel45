@@ -22,17 +22,44 @@
                     <input type="hidden" id="animalId">
                     
                     <div class="form-group">
-                        <label>Nombre:</label>
-                        <input type="text" id="nombre" required>
+                        <label>Registro:</label>
+                        <input type="text" id="registro" placeholder="RD ASD 11234" required>
                     </div>
 
                     <div class="form-group">
-                        <label>Género:</label>
-                        <select id="genero" required>
-                            <option value="">Seleccionar</option>
-                            <option value="Macho">Macho</option>
-                            <option value="Hembra">Hembra</option>
-                        </select>
+                        <label>Nombre:</label>
+                        <input type="text" id="nombre" placeholder="MISS SUAREZ 04/24 ET" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Raza:</label>
+                        <input type="text" id="raza" placeholder="Brahman" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Sexo:</label>
+                            <select id="sexo" required>
+                                <option value="">Seleccionar</option>
+                                <option value="Macho">Macho</option>
+                                <option value="Hembra">Hembra</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha de Nacimiento:</label>
+                            <input type="date" id="fecha_nacimiento" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" id="partosContainer" style="display: none;">
+                            <label>Partos:</label>
+                            <input type="number" id="partos" value="0" min="0">
+                        </div>
+                        <div class="form-group" id="circunferenciaContainer" style="display: none;">
+                            <label>Circunferencia Escrotal (cm):</label>
+                            <input type="number" id="circunferencia_escrotal" step="0.1">
+                        </div>
                     </div>
 
                     <div class="form-row">
@@ -41,29 +68,41 @@
                             <input type="number" id="peso" step="0.1" required>
                         </div>
                         <div class="form-group">
-                            <label>Edad (años):</label>
-                            <input type="number" id="edad" required>
+                            <label>Altura (cm):</label>
+                            <input type="number" id="altura" step="0.1" required>
                         </div>
                     </div>
 
-                    <div class="form-group" id="gestionesContainer" style="display: none;">
-                        <label>Número de Gestaciones:</label>
-                        <input type="number" id="gestaciones" value="0">
+                    <div class="form-group">
+                        <label>Premios:</label>
+                        <div id="premiosContainer">
+                            <!-- Los premios se agregarán dinámicamente aquí -->
+                        </div>
+                        <button type="button" id="btnAgregarPremio" class="btn-secondary btn-small" style="margin-top: 10px;">
+                            + Agregar Premio
+                        </button>
+                    </div>
+
+                    <!-- Campos de archivo para foto y PDF -->
+                    <div class="form-group">
+                        <label>Foto del Animal:</label>
+                        <input type="file" id="foto_file" accept="image/*" class="file-input">
+                        <div id="foto_preview" class="file-preview"></div>
+                        <input type="hidden" id="foto_url">
+                        <small class="file-hint">Formatos: JPG, PNG, GIF. Máx: 5MB</small>
                     </div>
 
                     <div class="form-group">
-                        <label>URL de la Foto:</label>
-                        <input type="url" id="foto_url" placeholder="https://ejemplo.com/foto.jpg">
-                    </div>
-
-                    <div class="form-group">
-                        <label>URL del PDF Pedigree:</label>
-                        <input type="url" id="pdf_url" placeholder="https://ejemplo.com/pedigree.pdf">
+                        <label>PDF del Pedigree:</label>
+                        <input type="file" id="pdf_file" accept=".pdf" class="file-input">
+                        <div id="pdf_preview" class="file-preview"></div>
+                        <input type="hidden" id="pdf_url">
+                        <small class="file-hint">Solo archivos PDF. Máx: 10MB</small>
                     </div>
 
                     <div class="form-actions">
                         <button type="button" id="btnCancelar" class="btn-secondary">Cancelar</button>
-                        <button type="submit" class="btn-primary">Guardar</button>
+                        <button type="submit" class="btn-primary" id="btnSubmit">Guardar</button>
                     </div>
                 </form>
             </div>

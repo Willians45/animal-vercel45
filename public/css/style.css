@@ -56,6 +56,11 @@ h1 {
     border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
+    transition: background 0.3s;
+}
+
+.btn-secondary:hover {
+    background: #7f8c8d;
 }
 
 /* Grid de animales */
@@ -79,10 +84,28 @@ h1 {
 
 .animal-header {
     display: flex;
-    justify-content: between;
+    justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
-    gap: 10px
+    gap: 10px;
+}
+
+.genero-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.genero-badge.macho {
+    background: #3498db;
+    color: white;
+}
+
+.genero-badge.hembra {
+    background: #e84393;
+    color: white;
 }
 
 .animal-foto {
@@ -91,6 +114,15 @@ h1 {
     object-fit: cover;
     border-radius: 8px;
     margin-bottom: 15px;
+}
+
+.animal-info {
+    margin-bottom: 15px;
+}
+
+.animal-info p {
+    margin-bottom: 8px;
+    font-size: 14px;
 }
 
 .animal-actions {
@@ -121,7 +153,7 @@ h1 {
     margin: 5% auto;
     padding: 30px;
     border-radius: 10px;
-    max-width: 500px;
+    max-width: 600px;
     width: 90%;
     max-height: 90vh;
     overflow-y: auto;
@@ -145,6 +177,7 @@ label {
     display: block;
     margin-bottom: 5px;
     font-weight: 600;
+    color: #2c3e50;
 }
 
 input, select {
@@ -153,6 +186,31 @@ input, select {
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+.premio-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+
+.premio-item select,
+.premio-item input {
+    flex: 2;
+}
+
+.btn-eliminar-premio {
+    flex: 1;
 }
 
 .form-actions {
@@ -160,6 +218,8 @@ input, select {
     gap: 10px;
     justify-content: flex-end;
     margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
 }
 
 /* Responsive */
@@ -185,6 +245,12 @@ input, select {
     .modal-content {
         margin: 10% auto;
         width: 95%;
+        padding: 20px;
+    }
+    
+    .premio-item {
+        flex-direction: column;
+        gap: 5px;
     }
 }
 
@@ -198,11 +264,12 @@ input, select {
 #qrcode canvas {
     border: 10px solid white;
     border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 /* Estilos específicos para la página de perfil */
 .perfil-container {
-    max-width: 600px;
+    max-width: 800px;
     margin: 0 auto;
     padding: 20px;
 }
@@ -210,16 +277,25 @@ input, select {
 .perfil-header {
     text-align: center;
     margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #3498db;
+}
+
+.perfil-header h1 {
+    color: #2c3e50;
+    font-size: 2.5em;
+    margin-bottom: 10px;
 }
 
 .perfil-foto {
     width: 100%;
-    max-width: 400px;
-    height: 300px;
+    max-width: 500px;
+    height: 350px;
     object-fit: cover;
     border-radius: 10px;
     margin: 0 auto 20px;
     display: block;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 .perfil-foto.placeholder {
@@ -230,43 +306,68 @@ input, select {
     color: #6c757d;
     font-style: italic;
     border: 2px dashed #dee2e6;
+    font-size: 16px;
 }
 
 .perfil-info {
     background: white;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
 
 .info-group {
-    margin-bottom: 25px;
+    margin-bottom: 30px;
     padding-bottom: 20px;
     border-bottom: 1px solid #eee;
-    text-align: center;
 }
 
 .info-group:last-child {
     border-bottom: none;
+    margin-bottom: 0;
 }
 
 .info-group h3 {
     color: #2c3e50;
-    margin-bottom: 15px;
-    font-size: 1.2em;
+    margin-bottom: 20px;
+    font-size: 1.4em;
+    border-left: 4px solid #3498db;
+    padding-left: 15px;
 }
 
 .info-group p {
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     font-size: 16px;
+    line-height: 1.8;
+}
+
+.info-group ul {
+    text-align: left;
+    list-style-type: none;
+    padding: 0;
+}
+
+.info-group li {
+    margin-bottom: 12px;
+    padding: 10px 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #27ae60;
 }
 
 .qr-container {
     text-align: center;
-    margin: 30px 0;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 10px;
+    margin: 40px 0;
+    padding: 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    color: white;
+}
+
+.qr-container h3 {
+    color: white;
+    margin-bottom: 20px;
+    font-size: 1.4em;
 }
 
 .btn-descargar-pdf {
@@ -274,24 +375,39 @@ input, select {
     color: white;
     border: none;
     padding: 15px 30px;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
     margin-top: 20px;
     width: 100%;
     transition: background 0.3s;
+    font-weight: 600;
 }
 
 .btn-descargar-pdf:hover {
     background: #219a52;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
 }
 
 .empty-state, .error-state {
     text-align: center;
-    padding: 40px 20px;
+    padding: 60px 20px;
     background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.empty-state h3, .error-state h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+}
+
+.empty-state p, .error-state p {
+    color: #7f8c8d;
+    margin-bottom: 25px;
+    font-size: 16px;
 }
 
 /* Estilos para impresión (PDF) */
@@ -303,10 +419,175 @@ input, select {
     .perfil-container {
         max-width: none;
         padding: 0;
+        margin: 0;
     }
     
     .perfil-info {
         box-shadow: none;
-        padding: 0;
+        padding: 20px;
+    }
+    
+    .qr-container {
+        background: #f8f9fa !important;
+        color: #333 !important;
+        break-inside: avoid;
+    }
+    
+    .qr-container h3 {
+        color: #333 !important;
+    }
+    
+    body {
+        background: white !important;
+    }
+}
+
+/* Mejoras visuales adicionales */
+.animal-card h3 {
+    color: #2c3e50;
+    font-size: 1.3em;
+    margin-bottom: 5px;
+}
+
+.animal-card .animal-info p strong {
+    color: #2c3e50;
+    min-width: 120px;
+    display: inline-block;
+}
+
+/* Animaciones suaves */
+.animal-card, .perfil-info, .modal-content {
+    transition: all 0.3s ease;
+}
+
+/* Mejora en los badges de género */
+.genero-badge.desconocido {
+    background: #95a5a6;
+    color: white;
+}
+
+/* Estilos para los premios en el formulario */
+.premio-item {
+    border: 1px solid #e9ecef;
+    transition: border-color 0.3s;
+}
+
+.premio-item:hover {
+    border-color: #3498db;
+}
+
+/* Estilos para subida de archivos */
+.file-input {
+    width: 100%;
+    padding: 10px;
+    border: 2px dashed #ddd;
+    border-radius: 5px;
+    background: #f8f9fa;
+    transition: border-color 0.3s;
+}
+
+.file-input:hover {
+    border-color: #3498db;
+}
+
+.file-input:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+.file-preview {
+    margin-top: 10px;
+    min-height: 50px;
+}
+
+.preview-container {
+    position: relative;
+    display: inline-block;
+    margin: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    background: white;
+}
+
+.preview-image {
+    max-width: 200px;
+    max-height: 150px;
+    border-radius: 5px;
+}
+
+.pdf-preview {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+
+.pdf-icon {
+    font-size: 24px;
+}
+
+.pdf-name {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.btn-remove-preview {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-remove-preview:hover {
+    background: #c0392b;
+}
+
+.file-hint {
+    display: block;
+    margin-top: 5px;
+    color: #7f8c8d;
+    font-size: 12px;
+}
+
+/* Mejoras para el formulario */
+.form-group small {
+    color: #7f8c8d;
+    font-style: italic;
+}
+
+/* Loading states */
+.btn-primary:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+}
+
+.btn-primary:disabled:hover {
+    background: #bdc3c7;
+    transform: none;
+}
+
+/* Mejoras responsive para previsualización */
+@media (max-width: 768px) {
+    .preview-image {
+        max-width: 150px;
+        max-height: 100px;
+    }
+    
+    .pdf-preview {
+        flex-direction: column;
+        text-align: center;
     }
 }

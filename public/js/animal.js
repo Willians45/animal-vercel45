@@ -73,11 +73,20 @@ class PerfilAnimal {
         const animalesEjemplo = {
             '1': {
                 id: '1',
-                nombre: 'Max',
-                genero: 'Macho',
-                peso: '25',
-                edad: '3',
-                gestaciones: '0',
+                registro: 'RD ASD 11234',
+                nombre: 'MISS SUAREZ 04/24 ET',
+                raza: 'Brahman',
+                sexo: 'Hembra',
+                fecha_nacimiento: '2024-08-29',
+                partos: 3,
+                circunferencia_escrotal: null,
+                peso: 450,
+                altura: 145,
+                premios: [
+                    { feria: 'Mejor Vaca 2025', posicion: 'Primer Lugar' },
+                    { feria: 'Higuey 2023', posicion: 'Tercer Lugar' },
+                    { feria: 'Puerto Plata 2025', posicion: 'Primer Lugar' }
+                ],
                 foto_url: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=300&fit=crop',
                 pdf_url: '',
                 fecha_creacion: '2025-02-10T10:30:00.000Z',
@@ -85,11 +94,18 @@ class PerfilAnimal {
             },
             '2': {
                 id: '2',
-                nombre: 'Luna',
-                genero: 'Hembra',
-                peso: '20',
-                edad: '2',
-                gestaciones: '1',
+                registro: 'RD ASD 11235',
+                nombre: 'TORO BRAVO 01/23',
+                raza: 'Brahman',
+                sexo: 'Macho',
+                fecha_nacimiento: '2023-01-15',
+                partos: null,
+                circunferencia_escrotal: 38.5,
+                peso: 650,
+                altura: 155,
+                premios: [
+                    { feria: 'Mejor Vaca 2025', posicion: 'Segundo Lugar' }
+                ],
                 foto_url: 'https://images.unsplash.com/photo-1560809454-c93b5a4c8140?w=400&h=300&fit=crop',
                 pdf_url: '',
                 fecha_creacion: '2025-02-10T11:00:00.000Z',
@@ -117,14 +133,33 @@ class PerfilAnimal {
                 
                 <div class="info-group">
                     <h3>Información Básica</h3>
+                    <p><strong>Registro:</strong> ${this.animal.registro}</p>
                     <p><strong>Nombre:</strong> ${this.animal.nombre}</p>
-                    <p><strong>Género:</strong> ${this.animal.genero}</p>
+                    <p><strong>Raza:</strong> ${this.animal.raza}</p>
+                    <p><strong>Sexo:</strong> ${this.animal.sexo}</p>
+                    <p><strong>Fecha de Nacimiento:</strong> ${this.animal.fecha_nacimiento ? new Date(this.animal.fecha_nacimiento).toLocaleDateString() : 'N/A'}</p>
                     <p><strong>Peso:</strong> ${this.animal.peso} kg</p>
-                    <p><strong>Edad:</strong> ${this.animal.edad} años</p>
-                    ${this.animal.genero === 'Hembra' && this.animal.gestaciones ? 
-                        `<p><strong>Número de Gestaciones:</strong> ${this.animal.gestaciones}</p>` 
+                    <p><strong>Altura:</strong> ${this.animal.altura} cm</p>
+                    ${this.animal.sexo === 'Hembra' && this.animal.partos !== null ? 
+                        `<p><strong>Partos:</strong> ${this.animal.partos}</p>` 
+                        : ''}
+                    ${this.animal.sexo === 'Macho' && this.animal.circunferencia_escrotal !== null ? 
+                        `<p><strong>Circunferencia Escrotal:</strong> ${this.animal.circunferencia_escrotal} cm</p>` 
                         : ''}
                 </div>
+
+                ${this.animal.premios && this.animal.premios.length > 0 ? `
+                <div class="info-group">
+                    <h3>Premios</h3>
+                    <ul style="text-align: left; list-style-type: none; padding: 0;">
+                        ${this.animal.premios.map(premio => `
+                            <li style="margin-bottom: 8px;">
+                                <strong>${premio.feria}:</strong> ${premio.posicion}
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+                ` : ''}
 
                 ${this.animal.pdf_url ? `
                 <div class="info-group">

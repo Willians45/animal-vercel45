@@ -1,4 +1,4 @@
-// server.js - Versión con Supabase
+// server.js - Versión con Supabase y subida de archivos
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
@@ -14,7 +14,8 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Middleware para permitir peticiones desde tu frontend y parsear JSON
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Servir archivos estáticos desde la carpeta public
 app.use(express.static(path.join(__dirname, 'public')));
@@ -27,6 +28,52 @@ app.get('/', (req, res) => {
 // Ruta para la página de perfil de animal
 app.get('/animal.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'animal.html'));
+});
+
+// Ruta para subir archivos a Supabase Storage
+app.post('/api/upload', async (req, res) => {
+  try {
+    const { file, fileName, fileType } = req.body;
+    
+    if (!file || !fileName) {
+      return res.status(400).json({ error: 'Datos de archivo incompletos' });
+    }
+
+    console.log('📤 Subiendo archivo:', fileName);
+    
+    // Convertir base64 a buffer
+    const fileBuffer = Buffer.from(file.split(',')[1], 'base64');
+    
+    // Subir a Supabase Storage
+    const { data, error } = await supabase.storage
+      .from('animales')
+      .upload(fileName, fileBuffer, {
+        contentType: fileType,
+        upsert: true
+      });
+
+    if (error) {
+      console.error('❌ Error subiendo archivo:', error);
+      throw error;
+    }
+
+    // Obtener URL pública
+    const { data: urlData } = supabase.storage
+      .from('animales')
+      .getPublicUrl(fileName);
+
+    console.log('✅ Archivo subido correctamente:', urlData.publicUrl);
+    
+    res.json({ 
+      success: true, 
+      url: urlData.publicUrl,
+      fileName: fileName
+    });
+    
+  } catch (error) {
+    console.error('❌ Error en la subida:', error);
+    res.status(500).json({ error: 'Error subiendo archivo: ' + error.message });
+  }
 });
 
 // Ruta para OBTENER todos los animales
