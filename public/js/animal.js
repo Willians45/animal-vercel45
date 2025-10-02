@@ -180,10 +180,10 @@ class PerfilAnimal {
                         </div>
                     </div>
                     <div class="pdf-actions">
-                        <a href="${this.animal.pdf_url}" target="_blank" class="btn-primary btn-small">
+                        <a href="${this.animal.pdf_url}" target="_blank" class="btn-primary btn-small" style="display: none;">
                             Abrir PDF original
                         </a>
-                        <a href="${this.animal.pdf_url}" download class="btn-secondary btn-small">
+                        <a href="${this.animal.pdf_url}" download class="btn-secondary btn-small" style="display: none;">
                             Descargar PDF
                         </a>
                     </div>
