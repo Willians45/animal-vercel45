@@ -358,14 +358,14 @@ input:focus, select:focus {
     padding: 10px 15px;
     background: #f8f9fa;
     border-radius: 8px;
-    border-left: 4px solid #000F51;
+    border-left: 4px solid #764ba2;
 }
 
 .qr-container {
     text-align: center;
     margin: 40px 0;
     padding: 30px;
-    background: linear-gradient(135deg, #000F51 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 15px;
     color: white;
 }
