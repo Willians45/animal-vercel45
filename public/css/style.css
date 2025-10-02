@@ -272,14 +272,13 @@ input:focus, select:focus {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #D49001;
+    background-color: #011256;
 }
 
 .perfil-header {
     text-align: center;
     margin-bottom: 30px;
     padding-bottom: 20px;
-    border-bottom: 2px solid #000F51;
 }
 
 .perfil-header h1 {
@@ -324,17 +323,13 @@ input:focus, select:focus {
     text-align: center;
 }
 
-.info-group strong{
-    color: #000D51;
-}
-
 .info-group:last-child {
     border-bottom: none;
     margin-bottom: 0;
 }
 
 .info-group h3 {
-    color: #000D51;
+    color: #F0A003;
     margin-bottom: 20px;
     font-size: 1.4em;
     border-left: 4px solid #000F51;
@@ -365,7 +360,7 @@ input:focus, select:focus {
     text-align: center;
     margin: 40px 0;
     padding: 30px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #011255 0%, #764ba2 100%);
     border-radius: 15px;
     color: white;
 }
