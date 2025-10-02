@@ -678,6 +678,10 @@ input:focus, select:focus {
         gap: 10px;
         padding: 15px;
     }
+
+    .perfil-foto {
+        object-fit: scale-down;
+    }
     
     .pdf-canvas-container {
         padding: 10px;
