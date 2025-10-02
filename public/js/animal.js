@@ -163,15 +163,30 @@ class PerfilAnimal {
 
                 ${this.animal.pdf_url ? `
                 <div class="info-group">
-                    <h3>Documentación</h3>
-                    <p>
-                        <strong>Pedigree:</strong> 
-                        <a href="${this.animal.pdf_url}" target="_blank" style="color: #3498db;">
-                            Ver PDF del Pedigree
+                    <h3>Documentación - Pedigree</h3>
+                    <div class="pdf-viewer-container">
+                        <iframe src="${this.animal.pdf_url}" class="pdf-viewer" title="PDF del Pedigree">
+                            Tu navegador no soporta la visualización de PDFs. 
+                            <a href="${this.animal.pdf_url}" target="_blank">Descargar PDF</a>
+                        </iframe>
+                    </div>
+                    <div class="pdf-actions">
+                        <a href="${this.animal.pdf_url}" target="_blank" class="btn-primary btn-small">
+                            Abrir en nueva pestaña
                         </a>
-                    </p>
+                        <a href="${this.animal.pdf_url}" download class="btn-secondary btn-small">
+                            Descargar PDF
+                        </a>
+                    </div>
                 </div>
-                ` : ''}
+                ` : `
+                <div class="info-group">
+                    <h3>Documentación</h3>
+                    <div class="pdf-viewer-placeholder">
+                        <p>No hay PDF de pedigree disponible</p>
+                    </div>
+                </div>
+                `}
 
                 <div class="qr-container">
                     <h3>QR para Compartir</h3>
