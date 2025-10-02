@@ -371,7 +371,7 @@ input:focus, select:focus {
     font-size: 1.4em;
 }
 
-.qr-container p{
+#qr-container p{
     color: white;
 }
 
@@ -387,6 +387,7 @@ input:focus, select:focus {
     width: 100%;
     transition: background 0.3s;
     font-weight: 600;
+    display: none;
 }
 
 .btn-descargar-pdf:hover {
