@@ -279,7 +279,7 @@ input:focus, select:focus {
     text-align: center;
     margin-bottom: 30px;
     padding-bottom: 20px;
-    border-bottom: 2px solid #ffffff;
+    border-bottom: 2px solid #000F51;
 }
 
 .perfil-header h1 {
@@ -337,7 +337,7 @@ input:focus, select:focus {
     color: #000D51;
     margin-bottom: 20px;
     font-size: 1.4em;
-    border-left: 4px solid #D48F04;
+    border-left: 4px solid #000F51;
     padding-left: 15px;
 }
 
