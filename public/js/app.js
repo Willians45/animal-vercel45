@@ -19,7 +19,7 @@ class DashboardAnimales {
     }
 
     init() {
-        console.log('🚀 Iniciando dashboard con servidor backend...');
+        console.log('🚀 Iniciando dashboard con Supabase...');
         this.bindEvents();
         this.cargarAnimales();
     }
@@ -69,19 +69,20 @@ class DashboardAnimales {
 
     async cargarAnimales() {
         try {
-            console.log('📡 Cargando datos desde localStorage...');
-            const animalesStorage = localStorage.getItem('animales');
-            if (animalesStorage) {
-            this.animales = JSON.parse(animalesStorage);
+            console.log('📡 Cargando datos desde Supabase...');
+            const response = await fetch(API_URL);
+            
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+            
+            this.animales = await response.json();
             console.log('🐕 Animales cargados:', this.animales);
             this.mostrarAnimales();
-            } else {
-            // Si no hay datos, cargamos los datos de ejemplo
-            this.mostrarDatosEjemplo();
-            }
+            
         } catch (error) {
             console.error('❌ Error cargando animales:', error);
-            this.mostrarErrorCarga('No se pudieron cargar los datos.');
+            this.mostrarErrorCarga('No se pudieron cargar los datos del servidor.');
         }
     }
 
@@ -96,7 +97,7 @@ class DashboardAnimales {
                 <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
                     <strong>Para solucionar:</strong>
                     <ol style="text-align: left; margin: 10px 0;">
-                        <li>Verifica que el servidor esté funcionando</li>
+                        <li>Verifica tu conexión a internet</li>
                         <li>Recarga la página</li>
                         <li>Si el problema persiste, contacta al administrador</li>
                     </ol>
@@ -136,8 +137,6 @@ class DashboardAnimales {
                 url_perfil: `${window.location.origin}/animal.html?id=2`
             }
         ];
-        // Guardar los datos de ejemplo en localStorage
-        localStorage.setItem('animales', JSON.stringify(this.animales));
         this.mostrarAnimales();
     }
 
@@ -310,29 +309,44 @@ class DashboardAnimales {
         
         // 6. Actualizar array local
         if (animalId) {
+            // EDICIÓN: Encontrar y actualizar animal existente
             const index = this.animales.findIndex(a => a.id === animalId);
             if (index !== -1) {
-            nuevoAnimal.fecha_creacion = this.animales[index].fecha_creacion;
-            this.animales[index] = { ...this.animales[index], ...nuevoAnimal };
-            console.log('✏️ Animal editado:', nuevoAnimal);
+                // Mantener la fecha_creacion original durante edición
+                nuevoAnimal.fecha_creacion = this.animales[index].fecha_creacion;
+                this.animales[index] = { ...this.animales[index], ...nuevoAnimal };
+                console.log('✏️ Animal editado:', nuevoAnimal);
+            } else {
+                console.error('❌ No se encontró el animal a editar');
+                alert('Error: No se encontró el animal para editar');
+                return;
             }
         } else {
+            // NUEVO ANIMAL: Agregar al array
             this.animales.push(nuevoAnimal);
             console.log('🆕 Nuevo animal agregado:', nuevoAnimal);
         }
         
-        // GUARDAR EN LOCALSTORAGE - CLAVE PARA LA SOLUCIÓN
-        localStorage.setItem('animales', JSON.stringify(this.animales));
-        
-        // 7. Intentar guardar en servidor (pero si falla, no importa)
+        // 7. Guardar en Supabase
         try {
             const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(this.animales)
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(this.animales)
             });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                alert('✅ ¡Animal guardado permanentemente en Supabase!');
+            } else {
+                throw new Error(result.error || 'Error al guardar');
+            }
         } catch (error) {
-            console.log('⚠️ No se pudo guardar en servidor, pero los datos están en localStorage');
+            console.error('❌ Error al guardar:', error);
+            alert('⚠️ Error: No se pudo guardar en Supabase.');
         }
         
         this.cerrarModal();
@@ -352,16 +366,34 @@ class DashboardAnimales {
         }
     }
 
-    // AGREGAR ESTO AL MÉTODO eliminarAnimal
     async eliminarAnimal(id) {
-    if (!confirm('¿Estás seguro de eliminar este animal?')) return;
+        if (!confirm('¿Estás seguro de eliminar este animal?')) return;
 
-    this.animales = this.animales.filter(a => a.id !== id);
-    
-    // Guardar en localStorage inmediatamente después de eliminar
-    localStorage.setItem('animales', JSON.stringify(this.animales));
-    
-    this.mostrarAnimales();
+        try {
+            // Actualizar lista local
+            this.animales = this.animales.filter(a => a.id !== id);
+            
+            // Guardar cambios en Supabase
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(this.animales)
+            });
+            
+            if (response.ok) {
+                console.log('🗑️ Animal eliminado:', id);
+                alert('✅ Animal eliminado permanentemente de Supabase');
+            } else {
+                throw new Error('Error al eliminar en Supabase');
+            }
+        } catch (error) {
+            console.error('❌ Error al eliminar:', error);
+            alert('⚠️ Error: No se pudo eliminar el animal de Supabase');
+        }
+        
+        this.mostrarAnimales();
     }
 
     mostrarQR(animalId) {

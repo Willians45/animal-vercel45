@@ -44,29 +44,24 @@ class PerfilAnimal {
         }
 
         try {
-            console.log('📡 Cargando perfil del animal desde localStorage...');
-            const animalesStorage = localStorage.getItem('animales');
+            console.log('📡 Cargando perfil del animal desde API...');
+            const response = await fetch(`${API_URL}/${animalId}`);
             
-            if (!animalesStorage) {
-            throw new Error('No hay datos en localStorage');
+            if (response.status === 404) {
+                throw new Error('Animal no encontrado');
             }
             
-            const animales = JSON.parse(animalesStorage);
-            console.log('📊 Datos recibidos:', animales);
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
             
-            // Buscar el animal por ID
-            this.animal = animales.find(a => a.id === animalId);
-            
-            if (this.animal) {
+            this.animal = await response.json();
             console.log('✅ Animal encontrado:', this.animal);
             this.mostrarPerfil();
-            } else {
-            console.log('❌ Animal no encontrado, ID:', animalId);
-            this.mostrarError('Animal no encontrado');
-            }
             
         } catch (error) {
             console.error('❌ Error cargando perfil:', error);
+            // Si hay error, mostrar datos de ejemplo
             this.mostrarPerfilEjemplo(animalId);
         }
     }
@@ -253,11 +248,11 @@ function initPerfilAnimal() {
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
             window.perfil = new PerfilAnimal();
-            console.log('✅ Perfil con API inicializado correctamente');
+            console.log('✅ Perfil con Supabase inicializado correctamente');
         });
     } else {
         window.perfil = new PerfilAnimal();
-        console.log('✅ Perfil con API inicializado correctamente');
+        console.log('✅ Perfil con Supabase inicializado correctamente');
     }
 }
 

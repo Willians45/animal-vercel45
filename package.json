@@ -1,15 +1,22 @@
 {
   "name": "dashboard-animales",
   "version": "1.0.0",
+  "description": "Sistema de gestión de animales con QR",
+  "main": "server.js",
   "scripts": {
     "dev": "node server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "vercel-build": "echo 'Building for Vercel'"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "@supabase/supabase-js": "^2.38.0"
   },
   "engines": {
-    "node": "18.x"
-  }
+    "node": "22.x"
+  },
+  "keywords": ["animales", "qr", "dashboard", "express", "supabase"],
+  "author": "Tu Nombre",
+  "license": "MIT"
 }

@@ -1,14 +1,16 @@
-// server.js - Versión para Vercel
+// server.js - Versión con Supabase
 const express = require('express');
-const fs = require('fs').promises;
 const path = require('path');
 const cors = require('cors');
+const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// IMPORTANTE: Para Vercel, la ruta de la base de datos debe ser relativa
-const dbFile = path.join(__dirname, 'public', 'data', 'db.json');
+// Configuración de Supabase
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Middleware para permitir peticiones desde tu frontend y parsear JSON
 app.use(cors());
@@ -30,21 +32,24 @@ app.get('/animal.html', (req, res) => {
 // Ruta para OBTENER todos los animales
 app.get('/api/animales', async (req, res) => {
   try {
-    console.log('📖 Leyendo base de datos...');
-    const data = await fs.readFile(dbFile, 'utf8');
-    const jsonData = JSON.parse(data);
-    res.json(jsonData.animales || []);
+    console.log('📖 Leyendo animales desde Supabase...');
+    
+    const { data, error } = await supabase
+      .from('animales')
+      .select('*')
+      .order('fecha_creacion', { ascending: false });
+
+    if (error) {
+      console.error('❌ Error de Supabase:', error);
+      throw error;
+    }
+
+    console.log(`✅ ${data?.length || 0} animales cargados desde Supabase`);
+    res.json(data || []);
+    
   } catch (error) {
     console.error('❌ Error leyendo la base de datos:', error);
-    
-    // Si el archivo no existe, crear uno por defecto
-    if (error.code === 'ENOENT') {
-      const datosIniciales = { animales: [] };
-      await fs.writeFile(dbFile, JSON.stringify(datosIniciales, null, 2));
-      res.json([]);
-    } else {
-      res.status(500).json({ error: 'No se pudieron cargar los datos' });
-    }
+    res.status(500).json({ error: 'No se pudieron cargar los datos' });
   }
 });
 
@@ -52,35 +57,118 @@ app.get('/api/animales', async (req, res) => {
 app.post('/api/animales', async (req, res) => {
   try {
     const nuevosAnimales = req.body;
-    console.log('💾 Guardando animales:', nuevosAnimales.length);
+    console.log('💾 Guardando animales en Supabase:', nuevosAnimales.length);
     
     // Validar que sea un array
     if (!Array.isArray(nuevosAnimales)) {
       return res.status(400).json({ error: 'Los datos deben ser un array' });
     }
 
-    // Guarda el array de animales dentro de un objeto que contiene la clave "animales"
-    const datosParaGuardar = { animales: nuevosAnimales };
-    await fs.writeFile(dbFile, JSON.stringify(datosParaGuardar, null, 2));
+    // Primero eliminamos todos los registros existentes
+    const { error: deleteError } = await supabase
+      .from('animales')
+      .delete()
+      .not('id', 'is', null);
+
+    if (deleteError) {
+      console.error('❌ Error eliminando datos anteriores:', deleteError);
+      throw deleteError;
+    }
+
+    console.log('✅ Datos anteriores eliminados');
+
+    // Si no hay animales nuevos, retornar éxito
+    if (nuevosAnimales.length === 0) {
+      return res.json({ 
+        success: true, 
+        message: 'Base de datos limpiada correctamente',
+        count: 0
+      });
+    }
+
+    // Luego insertamos los nuevos animales
+    const { data, error: insertError } = await supabase
+      .from('animales')
+      .insert(nuevosAnimales)
+      .select();
+
+    if (insertError) {
+      console.error('❌ Error insertando nuevos datos:', insertError);
+      throw insertError;
+    }
+
+    console.log(`✅ ${data.length} animales guardados en Supabase`);
     
     res.json({ 
       success: true, 
       message: `Datos guardados correctamente (${nuevosAnimales.length} animales)`,
-      count: nuevosAnimales.length
+      count: nuevosAnimales.length,
+      data: data
     });
+    
   } catch (error) {
     console.error('❌ Error guardando en la base de datos:', error);
-    res.status(500).json({ error: 'No se pudieron guardar los datos' });
+    res.status(500).json({ error: 'No se pudieron guardar los datos: ' + error.message });
+  }
+});
+
+// Ruta para OBTENER un animal específico por ID
+app.get('/api/animales/:id', async (req, res) => {
+  try {
+    const animalId = req.params.id;
+    console.log('🔍 Buscando animal con ID:', animalId);
+    
+    const { data, error } = await supabase
+      .from('animales')
+      .select('*')
+      .eq('id', animalId)
+      .single();
+
+    if (error) {
+      console.error('❌ Error de Supabase:', error);
+      throw error;
+    }
+
+    if (!data) {
+      console.log('❌ Animal no encontrado:', animalId);
+      return res.status(404).json({ error: 'Animal no encontrado' });
+    }
+
+    console.log('✅ Animal encontrado:', data.nombre);
+    res.json(data);
+    
+  } catch (error) {
+    console.error('❌ Error buscando animal:', error);
+    res.status(500).json({ error: 'Error buscando animal: ' + error.message });
   }
 });
 
 // Ruta de salud para verificar que el servidor funciona
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    message: 'Servidor de animales funcionando',
-    timestamp: new Date().toISOString()
-  });
+app.get('/health', async (req, res) => {
+  try {
+    // Verificar conexión con Supabase
+    const { data, error } = await supabase
+      .from('animales')
+      .select('count')
+      .limit(1);
+
+    const supabaseStatus = error ? 'ERROR' : 'CONNECTED';
+    
+    res.json({ 
+      status: 'OK', 
+      message: 'Servidor de animales funcionando',
+      supabase: supabaseStatus,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.json({ 
+      status: 'WARNING', 
+      message: 'Servidor funcionando pero con errores en Supabase',
+      supabase: 'ERROR',
+      timestamp: new Date().toISOString(),
+      error: error.message
+    });
+  }
 });
 
 // Manejar todas las demás rutas para SPA (Single Page Application)
@@ -92,7 +180,7 @@ app.get('*', (req, res) => {
 if (process.env.VERCEL !== '1') {
   app.listen(port, () => {
     console.log(`🐾 Servidor ejecutándose en http://localhost:${port}`);
-    console.log(`📁 Ruta de DB: ${dbFile}`);
+    console.log(`🗄️  Conectado a Supabase: ${supabaseUrl ? '✅' : '❌'}`);
   });
 }
 
