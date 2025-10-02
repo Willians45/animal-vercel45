@@ -291,7 +291,7 @@ input:focus, select:focus {
     width: 100%;
     max-width: 500px;
     height: 350px;
-    object-fit: cover;
+    object-fit: fill;
     border-radius: 10px;
     margin: 0 auto 20px;
     display: block;
@@ -320,6 +320,7 @@ input:focus, select:focus {
     margin-bottom: 30px;
     padding-bottom: 20px;
     border-bottom: 1px solid #eee;
+    text-align: center;
 }
 
 .info-group:last-child {
@@ -368,6 +369,10 @@ input:focus, select:focus {
     color: white;
     margin-bottom: 20px;
     font-size: 1.4em;
+}
+
+.qr-container p{
+    color: white;
 }
 
 .btn-descargar-pdf {
