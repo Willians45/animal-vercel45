@@ -69,20 +69,19 @@ class DashboardAnimales {
 
     async cargarAnimales() {
         try {
-            console.log('📡 Cargando datos del servidor...');
-            const response = await fetch(API_URL);
-            
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
-            }
-            
-            this.animales = await response.json();
+            console.log('📡 Cargando datos desde localStorage...');
+            const animalesStorage = localStorage.getItem('animales');
+            if (animalesStorage) {
+            this.animales = JSON.parse(animalesStorage);
             console.log('🐕 Animales cargados:', this.animales);
             this.mostrarAnimales();
-            
+            } else {
+            // Si no hay datos, cargamos los datos de ejemplo
+            this.mostrarDatosEjemplo();
+            }
         } catch (error) {
             console.error('❌ Error cargando animales:', error);
-            this.mostrarErrorCarga('No se pudieron cargar los datos. Asegúrate de que el servidor esté ejecutándose correctamente.');
+            this.mostrarErrorCarga('No se pudieron cargar los datos.');
         }
     }
 
@@ -137,6 +136,8 @@ class DashboardAnimales {
                 url_perfil: `${window.location.origin}/animal.html?id=2`
             }
         ];
+        // Guardar los datos de ejemplo en localStorage
+        localStorage.setItem('animales', JSON.stringify(this.animales));
         this.mostrarAnimales();
     }
 
@@ -309,44 +310,29 @@ class DashboardAnimales {
         
         // 6. Actualizar array local
         if (animalId) {
-            // EDICIÓN: Encontrar y actualizar animal existente
             const index = this.animales.findIndex(a => a.id === animalId);
             if (index !== -1) {
-                // Mantener la fecha_creacion original durante edición
-                nuevoAnimal.fecha_creacion = this.animales[index].fecha_creacion;
-                this.animales[index] = { ...this.animales[index], ...nuevoAnimal };
-                console.log('✏️ Animal editado:', nuevoAnimal);
-            } else {
-                console.error('❌ No se encontró el animal a editar');
-                alert('Error: No se encontró el animal para editar');
-                return;
+            nuevoAnimal.fecha_creacion = this.animales[index].fecha_creacion;
+            this.animales[index] = { ...this.animales[index], ...nuevoAnimal };
+            console.log('✏️ Animal editado:', nuevoAnimal);
             }
         } else {
-            // NUEVO ANIMAL: Agregar al array
             this.animales.push(nuevoAnimal);
             console.log('🆕 Nuevo animal agregado:', nuevoAnimal);
         }
         
-        // 7. Guardar en servidor
+        // GUARDAR EN LOCALSTORAGE - CLAVE PARA LA SOLUCIÓN
+        localStorage.setItem('animales', JSON.stringify(this.animales));
+        
+        // 7. Intentar guardar en servidor (pero si falla, no importa)
         try {
             const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(this.animales)
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(this.animales)
             });
-            
-            const result = await response.json();
-            
-            if (response.ok) {
-                alert('✅ ¡Animal guardado permanentemente!');
-            } else {
-                throw new Error(result.error || 'Error al guardar');
-            }
         } catch (error) {
-            console.error('❌ Error al guardar:', error);
-            alert('⚠️ Error: No se pudo guardar en el servidor.');
+            console.log('⚠️ No se pudo guardar en servidor, pero los datos están en localStorage');
         }
         
         this.cerrarModal();
@@ -366,34 +352,16 @@ class DashboardAnimales {
         }
     }
 
+    // AGREGAR ESTO AL MÉTODO eliminarAnimal
     async eliminarAnimal(id) {
-        if (!confirm('¿Estás seguro de eliminar este animal?')) return;
+    if (!confirm('¿Estás seguro de eliminar este animal?')) return;
 
-        try {
-            // Actualizar lista local
-            this.animales = this.animales.filter(a => a.id !== id);
-            
-            // Guardar cambios en el servidor
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(this.animales)
-            });
-            
-            if (response.ok) {
-                console.log('🗑️ Animal eliminado:', id);
-                alert('✅ Animal eliminado permanentemente');
-            } else {
-                throw new Error('Error al eliminar en servidor');
-            }
-        } catch (error) {
-            console.error('❌ Error al eliminar:', error);
-            alert('⚠️ Animal eliminado localmente, pero no se pudo guardar el cambio en el servidor');
-        }
-        
-        this.mostrarAnimales();
+    this.animales = this.animales.filter(a => a.id !== id);
+    
+    // Guardar en localStorage inmediatamente después de eliminar
+    localStorage.setItem('animales', JSON.stringify(this.animales));
+    
+    this.mostrarAnimales();
     }
 
     mostrarQR(animalId) {

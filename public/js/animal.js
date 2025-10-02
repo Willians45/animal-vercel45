@@ -44,30 +44,29 @@ class PerfilAnimal {
         }
 
         try {
-            console.log('📡 Cargando perfil del animal desde API...');
-            const response = await fetch(API_URL);
+            console.log('📡 Cargando perfil del animal desde localStorage...');
+            const animalesStorage = localStorage.getItem('animales');
             
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
+            if (!animalesStorage) {
+            throw new Error('No hay datos en localStorage');
             }
             
-            const animales = await response.json();
+            const animales = JSON.parse(animalesStorage);
             console.log('📊 Datos recibidos:', animales);
             
             // Buscar el animal por ID
             this.animal = animales.find(a => a.id === animalId);
             
             if (this.animal) {
-                console.log('✅ Animal encontrado:', this.animal);
-                this.mostrarPerfil();
+            console.log('✅ Animal encontrado:', this.animal);
+            this.mostrarPerfil();
             } else {
-                console.log('❌ Animal no encontrado, ID:', animalId);
-                this.mostrarError('Animal no encontrado');
+            console.log('❌ Animal no encontrado, ID:', animalId);
+            this.mostrarError('Animal no encontrado');
             }
             
         } catch (error) {
             console.error('❌ Error cargando perfil:', error);
-            // Si hay error, mostrar datos de ejemplo
             this.mostrarPerfilEjemplo(animalId);
         }
     }
