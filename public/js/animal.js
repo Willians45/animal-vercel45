@@ -1,10 +1,16 @@
 // Configuración - API PARA PRODUCCIÓN
 const API_URL = '/api/animales';
 
+// Configurar PDF.js
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
 class PerfilAnimal {
     constructor() {
         this.animal = null;
         this.qrLibraryLoaded = false;
+        this.pdfViewer = null;
+        this.currentPdfPage = 1;
+        this.totalPdfPages = 0;
         this.loadQRLibrary();
         this.init();
     }
@@ -14,14 +20,12 @@ class PerfilAnimal {
     }
 
     loadQRLibrary() {
-        // Verificar si la librería ya está cargada
         if (typeof QRCode !== 'undefined') {
             this.qrLibraryLoaded = true;
             console.log('✅ Librería QRCode ya cargada en animal.js');
             return;
         }
 
-        // Cargar la librería dinámicamente
         const script = document.createElement('script');
         script.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
         script.onload = () => {
@@ -61,7 +65,6 @@ class PerfilAnimal {
             
         } catch (error) {
             console.error('❌ Error cargando perfil:', error);
-            // Si hay error, mostrar datos de ejemplo
             this.mostrarPerfilEjemplo(animalId);
         }
     }
@@ -69,7 +72,6 @@ class PerfilAnimal {
     mostrarPerfilEjemplo(animalId) {
         console.log('📝 Mostrando perfil de ejemplo...');
         
-        // Datos de ejemplo basados en el ID
         const animalesEjemplo = {
             '1': {
                 id: '1',
@@ -122,7 +124,7 @@ class PerfilAnimal {
         }
     }
 
-    mostrarPerfil() {
+    async mostrarPerfil() {
         document.getElementById('nombreAnimal').textContent = this.animal.nombre;
         
         const contenido = `
@@ -165,14 +167,21 @@ class PerfilAnimal {
                 <div class="info-group">
                     <h3>Documentación - Pedigree</h3>
                     <div class="pdf-viewer-container">
-                        <iframe src="${this.animal.pdf_url}" class="pdf-viewer" title="PDF del Pedigree">
-                            Tu navegador no soporta la visualización de PDFs. 
-                            <a href="${this.animal.pdf_url}" target="_blank">Descargar PDF</a>
-                        </iframe>
+                        <div class="pdf-controls">
+                            <button class="btn-pdf-prev btn-small" onclick="perfil.prevPage()">← Anterior</button>
+                            <span class="pdf-page-info">Página <span id="currentPage">1</span> de <span id="totalPages">1</span></span>
+                            <button class="btn-pdf-next btn-small" onclick="perfil.nextPage()">Siguiente →</button>
+                        </div>
+                        <div class="pdf-canvas-container">
+                            <canvas id="pdfCanvas"></canvas>
+                        </div>
+                        <div class="pdf-loading" id="pdfLoading">
+                            <p>Cargando PDF...</p>
+                        </div>
                     </div>
                     <div class="pdf-actions">
                         <a href="${this.animal.pdf_url}" target="_blank" class="btn-primary btn-small">
-                            Abrir en nueva pestaña
+                            Abrir PDF original
                         </a>
                         <a href="${this.animal.pdf_url}" download class="btn-secondary btn-small">
                             Descargar PDF
@@ -204,13 +213,83 @@ class PerfilAnimal {
 
         document.getElementById('perfilContent').innerHTML = contenido;
         
-        // Pequeño delay para asegurar que el DOM se actualizó
+        // Cargar PDF si existe
+        if (this.animal.pdf_url) {
+            setTimeout(() => {
+                this.cargarPDF(this.animal.pdf_url);
+            }, 500);
+        }
+        
+        // Generar QR
         setTimeout(() => {
             this.generarQR();
         }, 100);
     }
 
+    async cargarPDF(pdfUrl) {
+        try {
+            document.getElementById('pdfLoading').style.display = 'block';
+            
+            // Cargar el PDF
+            const loadingTask = pdfjsLib.getDocument(pdfUrl);
+            const pdf = await loadingTask.promise;
+            
+            this.totalPdfPages = pdf.numPages;
+            this.currentPdfPage = 1;
+            this.pdfDoc = pdf;
+            
+            document.getElementById('totalPages').textContent = this.totalPdfPages;
+            document.getElementById('currentPage').textContent = this.currentPdfPage;
+            
+            await this.renderPage(this.currentPdfPage);
+            
+            document.getElementById('pdfLoading').style.display = 'none';
+            
+        } catch (error) {
+            console.error('Error cargando PDF:', error);
+            document.getElementById('pdfLoading').innerHTML = '<p>Error cargando el PDF</p>';
+        }
+    }
+
+    async renderPage(pageNumber) {
+        try {
+            const page = await this.pdfDoc.getPage(pageNumber);
+            const canvas = document.getElementById('pdfCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            const viewport = page.getViewport({ scale: 1.5 });
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            
+            const renderContext = {
+                canvasContext: ctx,
+                viewport: viewport
+            };
+            
+            await page.render(renderContext).promise;
+            document.getElementById('currentPage').textContent = pageNumber;
+            
+        } catch (error) {
+            console.error('Error renderizando página:', error);
+        }
+    }
+
+    nextPage() {
+        if (this.currentPdfPage < this.totalPdfPages) {
+            this.currentPdfPage++;
+            this.renderPage(this.currentPdfPage);
+        }
+    }
+
+    prevPage() {
+        if (this.currentPdfPage > 1) {
+            this.currentPdfPage--;
+            this.renderPage(this.currentPdfPage);
+        }
+    }
+
     generarQR() {
+        // ... (mantener el mismo código de generación de QR)
         console.log('🔍 Iniciando generación de QR...');
         console.log('QRCode disponible:', typeof QRCode !== 'undefined');
         console.log('Estado librería cargada:', this.qrLibraryLoaded);
@@ -221,7 +300,6 @@ class PerfilAnimal {
             return;
         }
 
-        // Verificar si la librería QRCode está cargada
         if (!this.qrLibraryLoaded || typeof QRCode === 'undefined') {
             console.error('❌ Librería QRCode no cargada');
             qrContainer.innerHTML = `
@@ -234,7 +312,6 @@ class PerfilAnimal {
                 </div>
             `;
             
-            // Reintentar después de 1 segundo
             setTimeout(() => {
                 this.generarQR();
             }, 1000);
@@ -246,10 +323,8 @@ class PerfilAnimal {
         console.log('🔗 URL para QR:', urlCompleta);
 
         try {
-            // Limpiar el contenedor
             qrContainer.innerHTML = '';
             
-            // Usar la misma librería que funciona en app.js
             new QRCode(qrContainer, {
                 text: urlCompleta,
                 width: 150,

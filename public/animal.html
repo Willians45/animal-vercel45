@@ -5,42 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil del Animal</title>
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        .pdf-viewer-container {
-            margin: 20px 0;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .pdf-viewer {
-            width: 100%;
-            height: 600px;
-            border: none;
-        }
-        
-        .pdf-viewer-placeholder {
-            padding: 40px;
-            text-align: center;
-            background: #f8f9fa;
-            color: #6c757d;
-            border-radius: 8px;
-        }
-        
-        .pdf-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            justify-content: center;
-        }
-        
-        @media (max-width: 768px) {
-            .pdf-viewer {
-                height: 400px;
-            }
-        }
-    </style>
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf_viewer.min.css">
 </head>
 <body>
     <div class="perfil-container">
